@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Intersol Messenger - Aero Ultimate</title>
+    <title>Intersol Messenger - Aero Edition</title>
     <style>
         /* TEMA AERO WINDOWS 7 */
         body { 
@@ -32,41 +32,41 @@
             border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;
         }
         
-        .user-card { padding: 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .user-card { padding: 15px; display: flex; align-items: center; gap: 12px; }
         .avatar { width: 55px; height: 55px; background: #fff; border: 1px solid #999; border-radius: 5px; padding: 2px; cursor: pointer; object-fit: cover; }
         
         .status-select { font-size: 11px; border: none; background: transparent; color: #555; cursor: pointer; outline: none; }
         .music-info { font-size: 11px; color: #0055e0; font-style: italic; cursor: pointer; display: block; margin-top: 2px; }
 
-        /* LISTA DE CONTACTOS POR GRUPOS */
+        /* LISTA DE CONTACTOS CATEGORIZADA */
         .contact-list { flex-grow: 1; overflow-y: auto; padding: 5px; background: rgba(255, 255, 255, 0.5); margin: 5px; border-radius: 4px; }
-        
-        .group-header { font-size: 10px; font-weight: bold; color: #4e6a8e; padding: 8px 10px 4px 10px; text-transform: uppercase; display: flex; align-items: center; }
-        .group-header::after { content: ""; flex: 1; height: 1px; background: rgba(0,0,0,0.1); margin-left: 8px; }
+        .group-label { font-size: 11px; font-weight: bold; color: #4e6a8e; padding: 8px 10px 4px 10px; display: flex; align-items: center; }
+        .group-label::after { content: ""; flex: 1; height: 1px; background: rgba(0,0,0,0.1); margin-left: 8px; }
 
-        .contact { display: flex; align-items: center; padding: 6px 10px; cursor: pointer; border-radius: 4px; gap: 10px; position: relative; }
+        .contact { display: flex; align-items: center; padding: 6px 10px; cursor: pointer; border-radius: 4px; gap: 10px; }
         .contact:hover { background: rgba(255, 255, 255, 0.8); outline: 1px solid #ffd35e; }
         .status-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); }
-        .online { background: #31a24c; } .busy { background: #f02849; } .away { background: #f7b928; }
-
-        /* ESTRELLA DE FAVORITOS */
-        .fav-star { margin-left: auto; color: #ccc; font-size: 16px; transition: 0.2s; }
-        .fav-star.active { color: #ffb400; text-shadow: 0 0 3px rgba(0,0,0,0.2); }
+        .online { background: #31a24c; box-shadow: 0 0 4px #31a24c; } 
+        .busy { background: #f02849; } 
+        .away { background: #f7b928; }
+        .offline { background: #ccc; filter: grayscale(1); }
 
         /* CHAT VENTANA */
         #chat-window { 
-            display: none; position: absolute; top: 20px; left: 340px; width: 450px; height: 500px; 
+            display: none; position: absolute; top: 20px; left: 340px; width: 450px; height: 520px; 
             background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 10px; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
         }
-        #chat-msgs { 
-            flex-grow: 1; background: white; margin: 10px; padding: 15px; overflow-y: auto; 
-            border: 1px solid #cedee9; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 13px;
-        }
+        #chat-msgs { flex-grow: 1; background: white; margin: 10px; padding: 15px; overflow-y: auto; border: 1px solid #cedee9; border-radius: 4px; font-size: 13px; }
         
+        .msg-gif { max-width: 180px; border-radius: 8px; display: block; margin-top: 5px; }
+
         .chat-tools { padding: 5px 15px; display: flex; gap: 15px; font-size: 20px; cursor: pointer; align-items: center; border-top: 1px solid rgba(0,0,0,0.05); }
         .chat-input-area { padding: 10px 15px; display: flex; gap: 8px; background: rgba(0,0,0,0.02); }
         
+        input[type="text"] { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 3px; }
+        button { background: linear-gradient(#f9f9f9, #e1e1e1); border: 1px solid #aaa; padding: 5px 15px; cursor: pointer; border-radius: 3px; font-weight: bold; }
+
         .hidden { display: none !important; }
         .shake { animation: shake 0.2s 5; }
         @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(5px,5px); } 50% { transform: translate(-5px,-5px); } 75% { transform: translate(5px,-5px); } }
@@ -84,7 +84,7 @@
         <div class="header">
             <span>Intersol Messenger</span>
             <div style="display:flex; gap:10px;">
-                <span onclick="abrirChatGlobal()" style="cursor:pointer" title="Chat Global mIRC">🌐</span>
+                <span onclick="abrirChatGrupal('General')" style="cursor:pointer" title="Chat Grupal">👥</span>
                 <span onclick="toggleFullscreen()" style="cursor:pointer">⛶</span>
             </div>
         </div>
@@ -98,23 +98,20 @@
                     <option value="online">● Disponible</option>
                     <option value="busy">● Ocupado</option>
                     <option value="away">● Ausente</option>
+                    <option value="offline">● No conectado</option>
                 </select>
                 <span class="music-info" id="my-music" onclick="ponerMusica()">🎵 Poner música...</span>
             </div>
         </div>
 
         <div class="contact-list">
-            <div id="group-favs" class="hidden">
-                <div class="group-header">Favoritos ⭐</div>
-                <div id="list-favs"></div>
-            </div>
-            <div class="group-header">Amigos</div>
-            <div id="list-friends"></div>
+            <div class="group-label">CONECTADOS</div>
+            <div id="list-online"></div>
+            <div class="group-label">NO CONECTADOS</div>
+            <div id="list-offline"></div>
         </div>
 
-        <div style="padding:10px; text-align:center; background: rgba(0,0,0,0.05); border-radius: 0 0 8px 8px;">
-            <a href="hotmail.html" style="font-size:11px; color:#0055e0; text-decoration:none; font-weight:bold;">✉ Ir a Intersol Mail</a>
-        </div>
+        <div style="padding:8px; text-align:center; font-size:10px; color:#555; background: rgba(0,0,0,0.05);">Intersol ID Service</div>
     </div>
 
     <div id="chat-window">
@@ -132,7 +129,7 @@
         </div>
 
         <div class="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Escribe un mensaje...">
+            <input type="text" id="chat-input" placeholder="Escribe un mensaje o pega link de GIF...">
             <button onclick="enviarMensaje()">Enviar</button>
         </div>
     </div>
@@ -141,7 +138,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getDatabase, ref, onValue, push, serverTimestamp, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+    import { getDatabase, ref, onValue, push, serverTimestamp, update, onDisconnect } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAWMmRpC9chHuBMWbMCRFeEzhQjh1dJ0Uw",
@@ -155,22 +152,26 @@
     const session = JSON.parse(localStorage.getItem('intersol_user'));
     const userPath = 'intersol/usuarios/' + (session?.email?.replace(/\./g, '_') || '');
 
-    // PROGRESS BAR
+    // BARRA DE CARGA
     let p = 0;
     const interval = setInterval(() => {
-        p += 10; document.getElementById('p-bar').style.width = p + "%";
+        p += 20; document.getElementById('p-bar').style.width = p + "%";
         if(p >= 100) { clearInterval(interval); document.getElementById('loading-overlay').classList.add('hidden'); }
-    }, 150);
+    }, 80);
 
     let chatActivo = null;
-    let isGlobal = false;
+    let esChatGrupal = false;
 
     if (!session) {
         window.location.href = "hotmail.html";
     } else {
-        document.getElementById('my-name').innerText = session.nombre || session.email.split('@')[0];
-        
-        // Sincronizar mi info
+        document.getElementById('my-name').innerText = session.nombre;
+
+        // --- SISTEMA DE PRESENCIA (CONECTADO/DESCONECTADO) ---
+        const myPresenceRef = ref(db, userPath + '/status');
+        update(ref(db, userPath), { status: 'online', lastSeen: serverTimestamp() });
+        onDisconnect(myPresenceRef).set('offline'); // Se pone offline al cerrar pestaña
+
         onValue(ref(db, userPath), (s) => {
             const val = s.val();
             if(val) {
@@ -180,100 +181,98 @@
             }
         });
 
-        // Cargar Lista con Grupos y Favoritos
+        // --- RENDERIZADO DE CONTACTOS CATEGORIZADOS ---
         onValue(ref(db, 'intersol/usuarios'), (snap) => {
-            const listFavs = document.getElementById('list-favs');
-            const listFriends = document.getElementById('list-friends');
-            const favsGroup = document.getElementById('group-favs');
-            const favsIds = JSON.parse(localStorage.getItem('intersol_favs')) || [];
-            
-            listFavs.innerHTML = ""; listFriends.innerHTML = "";
-            let hasFavs = false;
+            const listOnline = document.getElementById('list-online');
+            const listOffline = document.getElementById('list-offline');
+            listOnline.innerHTML = ""; listOffline.innerHTML = "";
 
             snap.forEach(u => {
                 const user = u.val();
                 if(user.email === session.email) return;
 
-                const isFav = favsIds.includes(user.email);
-                if(isFav) hasFavs = true;
-
+                const isOnline = user.status && user.status !== 'offline';
                 const div = document.createElement('div');
                 div.className = 'contact';
                 div.innerHTML = `
                     <div style="position:relative">
-                        <img src="${user.foto || 'https://via.placeholder.com/55'}" style="width:35px; height:35px; border-radius:4px; object-fit:cover;">
-                        <div class="status-dot ${user.status || 'online'}" style="position:absolute; bottom:-2px; right:-2px;"></div>
+                        <img src="${user.foto || 'https://via.placeholder.com/55'}" style="width:35px; height:35px; border-radius:4px; object-fit:cover; ${!isOnline ? 'filter:grayscale(1)' : ''}">
+                        <div class="status-dot ${user.status || 'offline'}" style="position:absolute; bottom:-2px; right:-2px;"></div>
                     </div>
-                    <div><b>${user.nombre || user.email.split('@')[0]}</b><br><small style="color:#666; font-size:10px;">${user.music || ''}</small></div>
-                    <div class="fav-star ${isFav ? 'active' : ''}">★</div>
+                    <div><b style="${!isOnline ? 'color:#888' : ''}">${user.nombre}</b><br><small style="color:#666; font-size:10px;">${user.music || ''}</small></div>
                 `;
-
-                div.querySelector('.fav-star').onclick = (e) => {
-                    e.stopPropagation();
-                    toggleFavorito(user.email);
-                };
                 div.onclick = () => abrirChat(user);
-
-                if(isFav) listFavs.appendChild(div);
-                else listFriends.appendChild(div);
+                
+                if(isOnline) listOnline.appendChild(div);
+                else listOffline.appendChild(div);
             });
-            favsGroup.classList.toggle('hidden', !hasFavs);
         });
     }
 
-    window.toggleFavorito = (email) => {
-        let favs = JSON.parse(localStorage.getItem('intersol_favs')) || [];
-        favs = favs.includes(email) ? favs.filter(e => e !== email) : [...favs, email];
-        localStorage.setItem('intersol_favs', JSON.stringify(favs));
-    };
-
+    // --- FUNCIONES DE CHAT ---
     window.abrirChat = (user) => {
-        chatActivo = user; isGlobal = false;
+        chatActivo = user; esChatGrupal = false;
         document.getElementById('chat-window').style.display = 'flex';
-        document.getElementById('chat-with-name').children[0].innerText = "Conversando con " + (user.nombre || user.email);
+        document.getElementById('chat-with-name').children[0].innerText = "Conversando con " + user.nombre;
         cargarMensajes();
     };
 
-    window.abrirChatGlobal = () => {
-        chatActivo = { email: 'global', nombre: 'Sala Global #Intersol' };
-        isGlobal = true;
+    window.abrirChatGrupal = (nombre) => {
+        chatActivo = { email: 'grupal_' + nombre, nombre: 'Sala ' + nombre };
+        esChatGrupal = true;
         document.getElementById('chat-window').style.display = 'flex';
-        document.getElementById('chat-with-name').children[0].innerText = "Sala Global: #Intersol_Suite";
+        document.getElementById('chat-with-name').children[0].innerText = "Chat Grupal: " + nombre;
         cargarMensajes();
     };
 
     window.enviarMensaje = () => {
         const input = document.getElementById('chat-input');
-        if(!input.value.trim()) return;
-        const path = isGlobal ? 'intersol/msn_global' : 'intersol/chats/' + [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
-        push(ref(db, path), { user: session.nombre || session.email.split('@')[0], text: input.value, type: 'text', time: serverTimestamp() });
+        let txt = input.value.trim();
+        if(!txt || !chatActivo) return;
+
+        const chatID = esChatGrupal ? chatActivo.email : [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
+        push(ref(db, 'intersol/chats/' + chatID), { 
+            user: session.nombre, 
+            text: txt, 
+            type: 'text',
+            time: serverTimestamp() 
+        });
         input.value = "";
     };
 
     function cargarMensajes() {
-        const path = isGlobal ? 'intersol/msn_global' : 'intersol/chats/' + [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
-        onValue(ref(db, path), (snap) => {
-            const box = document.getElementById('chat-msgs'); box.innerHTML = isGlobal ? "<div>*** Conectado a #Intersol_Global</div>" : "";
+        const chatID = esChatGrupal ? chatActivo.email : [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
+        onValue(ref(db, 'intersol/chats/' + chatID), (snap) => {
+            const box = document.getElementById('chat-msgs'); box.innerHTML = "";
             snap.forEach(m => {
                 const msg = m.val();
+                let content = msg.text;
+
+                // Detección de GIF (si el link termina en .gif o es de tenor/giphy)
+                if(msg.text && (msg.text.includes('.gif') || msg.text.includes('giphy.com') || msg.text.includes('tenor.com'))) {
+                    content = `${msg.text} <img src="${msg.text}" class="msg-gif">`;
+                }
+
                 if(msg.type === 'zumbido') {
-                    box.innerHTML += `<div style="color:red"><b>¡Zumbido de ${msg.user}!</b></div>`;
+                    box.innerHTML += `<div style="color:red"><b>¡${msg.user} envió un zumbido!</b></div>`;
                     if(msg.user !== session.nombre) { 
                         document.getElementById('snd-zumbido').play();
                         document.getElementById('chat-window').classList.add('shake');
                         setTimeout(() => document.getElementById('chat-window').classList.remove('shake'), 500);
                     }
                 } else if(msg.type === 'file') {
-                    box.innerHTML += `<div><b>${msg.user}:</b> <a href="${msg.fileData}" download="${msg.fileName}">📁 ${msg.fileName}</a></div>`;
+                    const esImg = msg.fileData.startsWith('data:image');
+                    const fileContent = esImg ? `<img src="${msg.fileData}" style="max-width:150px; border-radius:5px; display:block; margin-top:5px;">` : `📁 ${msg.fileName}`;
+                    box.innerHTML += `<div><b>${msg.user} dice:</b><br> <a href="${msg.fileData}" download="${msg.fileName}">${fileContent}</a></div>`;
                 } else {
-                    box.innerHTML += `<div><b>&lt;${msg.user}&gt;</b> ${msg.text}</div>`;
+                    box.innerHTML += `<div><b>${msg.user}:</b> ${content}</div>`;
                 }
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    // OTRAS FUNCIONES MANTENIDAS
+    // --- ACCIONES DE PERFIL ---
     window.subirAvatarPropio = () => {
         const file = document.getElementById('avatar-input').files[0];
         const reader = new FileReader();
@@ -282,20 +281,19 @@
     };
     window.cambiarEstado = () => update(ref(db, userPath), { status: document.getElementById('my-status').value });
     window.ponerMusica = () => {
-        const m = prompt("¿Qué escuchas?");
-        if(m) update(ref(db, userPath), { music: m });
+        const m = prompt("¿Qué estás escuchando?");
+        if(m !== null) update(ref(db, userPath), { music: m });
     };
     window.enviarZumbido = () => {
-        if(isGlobal) return;
-        const chatID = [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
+        const chatID = esChatGrupal ? chatActivo.email : [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
         push(ref(db, 'intersol/chats/' + chatID), { type: 'zumbido', user: session.nombre });
     };
     window.enviarArchivoChat = () => {
         const file = document.getElementById('msg-file-input').files[0];
         const reader = new FileReader();
         reader.onload = (e) => {
-            const path = isGlobal ? 'intersol/msn_global' : 'intersol/chats/' + [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
-            push(ref(db, path), { user: session.nombre, fileName: file.name, fileData: e.target.result, type: 'file' });
+            const chatID = esChatGrupal ? chatActivo.email : [session.email, chatActivo.email].sort().join('_').replace(/\./g, '_');
+            push(ref(db, 'intersol/chats/' + chatID), { user: session.nombre, fileName: file.name, fileData: e.target.result, type: 'file' });
         };
         reader.readAsDataURL(file);
     };
